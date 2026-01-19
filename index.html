@@ -1,44 +1,138 @@
-<script>
-    let chars = [];
-    const display = document.getElementById('display');
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>즐거운 글자놀이</title>
+    <script src="https://unpkg.com/hangul-js"></script>
+    <style>
+        /* 유아들이 좋아하는 밝고 따뜻한 노란색 계열 배경 */
+        body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; text-align: center; background-color: #FFFDE7; margin: 0; padding: 20px; touch-action: manipulation; }
+        
+        /* 전자칠판에서도 잘 보이는 크고 선명한 글자창 */
+        #display { font-size: 100px; min-height: 160px; background: white; border-radius: 40px; display: flex; align-items: center; justify-content: center; margin-bottom: 30px; box-shadow: 0 10px 0 #FFD54F; border: 6px solid #FFC107; padding: 20px; color: #333; font-weight: bold; overflow-wrap: break-word; }
+        
+        .section-label { font-size: 24px; font-weight: bold; color: #555; margin-bottom: 12px; text-align: left; padding-left: 15px; }
+        .group { margin-bottom: 25px; padding: 20px; background: rgba(255,255,255,0.8); border-radius: 35px; box-shadow: 0 5px 0 #eee; }
+        
+        /* 터치하기 편한 큰 버튼 디자인 */
+        .btn { display: inline-block; width: 85px; height: 85px; line-height: 85px; margin: 6px; font-size: 34px; font-weight: bold; background: #fff; border: 4px solid #eee; border-radius: 22px; cursor: pointer; transition: 0.1s; user-select: none; box-shadow: 0 6px 0 #eee; }
+        .btn:active { transform: translateY(6px); box-shadow: none; }
+        
+        /* 가독성을 위한 색상 구분 */
+        .consonant { border-color: #64B5F6; color: #1976D2; box-shadow: 0 6px 0 #64B5F6; } /* 자음/쌍자음: 파랑 */
+        .vowel { border-color: #FF8A65; color: #E64A19; box-shadow: 0 6px 0 #FF8A65; } /* 모음/이중모음: 주황 */
+        .double { border-color: #BA68C8; color: #7B1FA2; box-shadow: 0 6px 0 #BA68C8; font-size: 24px; } /* 겹받침: 보라 */
+        
+        /* 하단 컨트롤 패널 */
+        .control-panel { display: flex; justify-content: center; gap: 15px; margin-top: 25px; }
+        .control { padding: 25px 10px; font-size: 26px; font-weight: bold; border-radius: 30px; border: none; cursor: pointer; color: white; flex: 1; min-width: 150px; transition: 0.2s; }
+        
+        .speak { background: #66BB6A; box-shadow: 0 8px 0 #388E3C; } /* 읽기 */
+        .delete-one { background: #FFAB40; box-shadow: 0 8px 0 #EF6C00; } /* 하나씩 지우기 */
+        .delete-all { background: #EF5350; box-shadow: 0 8px 0 #C62828; } /* 모두 지우기 */
+    </style>
+</head>
+<body>
+    <div id="display">즐거운 글자놀이</div>
 
-    function add(c) {
-        if(display.innerText === "즐거운 글자놀이") display.innerText = "";
-        chars.push(c); update();
-    }
-    function del() { chars.pop(); update(); }
-    function reset() { chars = []; display.innerText = "즐거운 글자놀이"; }
-    function update() { display.innerText = Hangul.assemble(chars) || "즐거운 글자놀이"; }
+    <div class="group">
+        <div class="section-label">🌟 자음과 쌍자음</div>
+        <div class="btn consonant" onclick="add('ㄱ')">ㄱ</div><div class="btn consonant" onclick="add('ㄴ')">ㄴ</div>
+        <div class="btn consonant" onclick="add('ㄷ')">ㄷ</div><div class="btn consonant" onclick="add('ㄹ')">ㄹ</div>
+        <div class="btn consonant" onclick="add('ㅁ')">ㅁ</div><div class="btn consonant" onclick="add('ㅂ')">ㅂ</div>
+        <div class="btn consonant" onclick="add('ㅅ')">ㅅ</div><div class="btn consonant" onclick="add('ㅇ')">ㅇ</div>
+        <div class="btn consonant" onclick="add('ㅈ')">ㅈ</div><div class="btn consonant" onclick="add('ㅊ')">ㅊ</div>
+        <div class="btn consonant" onclick="add('ㅋ')">ㅋ</div><div class="btn consonant" onclick="add('ㅌ')">ㅌ</div>
+        <div class="btn consonant" onclick="add('ㅍ')">ㅍ</div><div class="btn consonant" onclick="add('ㅎ')">ㅎ</div>
+        <div class="btn double" onclick="add('ㄲ')">ㄲ</div><div class="btn double" onclick="add('ㄸ')">ㄸ</div>
+        <div class="btn double" onclick="add('ㅃ')">ㅃ</div><div class="btn double" onclick="add('ㅆ')">ㅆ</div>
+        <div class="btn double" onclick="add('ㅉ')">ㅉ</div>
+    </div>
 
-    function speak() {
-        const text = display.innerText;
-        if(!text || text === "즐거운 글자놀이") return;
+    <div class="group">
+        <div class="section-label">🌈 모음과 이중모음</div>
+        <div class="btn vowel" onclick="add('ㅏ')">ㅏ</div><div class="btn vowel" onclick="add('ㅑ')">ㅑ</div>
+        <div class="btn vowel" onclick="add('ㅓ')">ㅓ</div><div class="btn vowel" onclick="add('ㅕ')">ㅕ</div>
+        <div class="btn vowel" onclick="add('ㅗ')">ㅗ</div><div class="btn vowel" onclick="add('ㅛ')">ㅛ</div>
+        <div class="btn vowel" onclick="add('ㅜ')">ㅜ</div><div class="btn vowel" onclick="add('ㅠ')">ㅠ</div>
+        <div class="btn vowel" onclick="add('ㅡ')">ㅡ</div><div class="btn vowel" onclick="add('ㅣ')">ㅣ</div>
+        <div class="btn vowel" onclick="add('ㅐ')">ㅐ</div><div class="btn vowel" onclick="add('ㅔ')">ㅔ</div>
+        <div class="btn vowel" onclick="add('ㅘ')">ㅘ</div><div class="btn vowel" onclick="add('ㅝ')">ㅝ</div>
+        <div class="btn vowel" onclick="add('ㅟ')">ㅟ</div><div class="btn vowel" onclick="add('ㅢ')">ㅢ</div>
+    </div>
 
-        window.speechSynthesis.cancel(); // 이전 음성 즉시 종료
+    <div class="group">
+        <div class="section-label">💎 겹받침</div>
+        <div class="btn double" onclick="add('ㄳ')">ㄳ</div><div class="btn double" onclick="add('ㄵ')">ㄵ</div>
+        <div class="btn double" onclick="add('ㄶ')">ㄶ</div><div class="btn double" onclick="add('ㄺ')">ㄺ</div>
+        <div class="btn double" onclick="add('ㄻ')">ㄻ</div><div class="btn double" onclick="add('ㄼ')">ㄼ</div>
+        <div class="btn double" onclick="add('ㄽ')">ㄽ</div><div class="btn double" onclick="add('ㄾ')">ㄾ</div>
+        <div class="btn double" onclick="add('ㄿ')">ㄿ</div><div class="btn double" onclick="add('ㅀ')">ㅀ</div>
+        <div class="btn double" onclick="add('ㅄ')">ㅄ</div>
+    </div>
 
-        setTimeout(() => {
-            const msg = new SpeechSynthesisUtterance(text);
-            msg.lang = 'ko-KR';
-            
-            // 자연스러운 발음을 위한 핵심 설정
-            msg.rate = 0.8;  // 너무 느리지 않게 속도 조절 (0.8~0.9가 가장 자연스러움)
-            msg.pitch = 1.0; // 목소리 톤을 안정적으로 설정
-            msg.volume = 1.0; // 소리 크기 최대
+    <div class="control-panel">
+        <button class="control speak" onclick="speak()">읽기</button>
+        <button class="control delete-one" onclick="del()">하나씩 지우기</button>
+        <button class="control delete-all" onclick="reset()">모두 지우기</button>
+    </div>
 
-            // 브라우저에서 제공하는 가장 고품질의 한국어 목소리 찾기
-            const voices = window.speechSynthesis.getVoices();
-            // 'Google 한국어' 또는 엣지의 'SunHi' 등 자연스러운 목소리 우선 선택
-            const preferredVoice = voices.find(v => v.name.includes('Google') && v.lang === 'ko-KR') || 
-                                   voices.find(v => v.lang.includes('ko'));
-            
-            if (preferredVoice) msg.voice = preferredVoice;
+    <script>
+        let chars = [];
+        const display = document.getElementById('display');
 
-            window.speechSynthesis.speak(msg);
-        }, 150);
-    }
+        function add(c) {
+            if(display.innerText === "즐거운 글자놀이") display.innerText = "";
+            chars.push(c);
+            update();
+        }
+        function del() {
+            chars.pop(); // 한 단계씩 지우기
+            update();
+        }
+        function reset() {
+            chars = [];
+            display.innerText = "즐거운 글자놀이";
+        }
+        function update() {
+            // 한글 조합 라이브러리 실행
+            const result = Hangul.assemble(chars);
+            display.innerText = result || "즐거운 글자놀이";
+        }
 
-    // 페이지 로드 시 음성 엔진 미리 준비 (부자연스러운 첫 발음 방지)
-    window.speechSynthesis.onvoiceschanged = () => {
-        window.speechSynthesis.getVoices();
-    };
-</script>
+        // 음성 출력 안정화 및 품질 개선 함수
+        function speak() {
+            const text = display.innerText;
+            if(!text || text === "즐거운 글자놀이") return;
+
+            // 재생 중인 모든 음성 즉시 취소
+            window.speechSynthesis.cancel();
+
+            // 0.2초 여유를 두어 음성 엔진이 모니터 출력 신호를 준비하게 함
+            setTimeout(() => {
+                const msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'ko-KR';
+                
+                // 자연스러운 대화 속도와 밝은 톤 설정
+                msg.rate = 0.85; 
+                msg.pitch = 1.1;
+                
+                // 사용 가능한 목소리 중 가장 품질 좋은 한국어 선택
+                const voices = window.speechSynthesis.getVoices();
+                const bestVoice = voices.find(v => (v.name.includes('Google') || v.name.includes('Natural')) && v.lang.includes('ko'))
+                                 || voices.find(v => v.lang.includes('ko'));
+                
+                if (bestVoice) msg.voice = bestVoice;
+
+                window.speechSynthesis.speak(msg);
+            }, 200);
+        }
+
+        // 음성 리스트 미리 로드
+        window.speechSynthesis.onvoiceschanged = () => {
+            window.speechSynthesis.getVoices();
+        };
+    </script>
+</body>
+</html>
